@@ -55,7 +55,6 @@ void otsu() {
 		m = m1;
 	}
 
-
 	int threshold = 0;
 	float max = 0;
 
@@ -65,9 +64,9 @@ void otsu() {
 			threshold = t;
 		}
 	}
-
+	
 	printf("==== Otsu =====\n");
-	printf("¹®ÅÎ°ª : %d\n", threshold);
+	printf("Â¹Â®Ã…ÃŽÂ°Âª : %d\n", threshold);
 	for (int i = 0; i < H; i++)
 		for (int j = 0; j < W; j++) {
 			if (inImg[i * W + j] < threshold)
@@ -117,7 +116,6 @@ void efficient2Pass()
 		for (int j = 0; j < W; j++)
 			if (inImg[i * W + j] != 0)
 				labelImg[i * W + j] = number++;
-
 
 	// 2-pass  labeling
 	int check = -1;
@@ -183,7 +181,7 @@ void efficient2Pass()
 			}
 	}
 
-	// histogram »êÃâ
+	// histogram 
 	int hist[256] = { 0 };
 
 	for (int i = 0; i < H; i++)
