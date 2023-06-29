@@ -5,7 +5,6 @@
 #include <math.h>
 #include <memory.h>
 
-
 #define BYTE    unsigned char
 #define maxlevel 255
 
@@ -19,7 +18,6 @@
 
 #define window_size 5
 
-
 void Q1_Sobel() {
 	FILE* infile;
 
@@ -27,7 +25,6 @@ void Q1_Sobel() {
 		printf("No Image File\n");
 		return;
 	}
-
 
 	BYTE* inImg = (BYTE*)malloc(sizeof(BYTE) * W * H);
 	BYTE* outImg = (BYTE*)malloc(sizeof(BYTE) * W * H);
@@ -40,32 +37,31 @@ void Q1_Sobel() {
 
 	for (int i = 1; i < H - 1; i++) {
 		for (int j = 1; j < W - 1; j++) {
-			// x ¹æÇâ sobel ¿¬»êÀÚ
+			// x_sobel
 			Gx = kernel_x[0][0] * inImg[(i - 1) * W + (j - 1)] + kernel_x[0][1] * inImg[(i - 1) * W + j] 
 				+ kernel_x[0][2] * inImg[(i - 1) * W + (j + 1)] + kernel_x[1][0] * inImg[i * W + (j - 1)]
 				+ kernel_x[1][1] * inImg[i * W + j] + kernel_x[1][2] * inImg[i * W + (j + 1)]
 				+ kernel_x[2][0] * inImg[(i + 1) * W + (j - 1)] + kernel_x[2][1] * inImg[(i + 1) * W + j]
 				+ kernel_x[2][2] * inImg[(i + 1) * W + (j + 1)];
-
-			// y ¹æÇâ sobel ¿¬»êÀÚ
+			// y_sobel
 			Gy = kernel_y[0][0] * inImg[(i - 1) * W + (j - 1)] + kernel_y[0][1] * inImg[(i - 1) * W + j]
 				+ kernel_y[0][2] * inImg[(i - 1) * W + (j + 1)] + kernel_y[1][0] * inImg[i * W + (j - 1)]
 				+ kernel_y[1][1] * inImg[i * W + j] + kernel_y[1][2] * inImg[i * W + (j + 1)]
 				+ kernel_y[2][0] * inImg[(i + 1) * W + (j - 1)] + kernel_y[2][1] * inImg[(i + 1) * W + j]
 				+ kernel_y[2][2] * inImg[(i + 1) * W + (j + 1)];
-
-			// gradient °è»ê
+			
+			// gradient
 			G = sqrt(Gx * Gx + Gy * Gy);
-
-			// [0, 255] Á¤±ÔÈ­
+			
+			// [0, 255]
 			G = G > 255 ? 255 : G;
 			G = G < 0 ? 0 : G;
 
 			outImg[i * W + j] = (BYTE)G;
 		}
 	}
-
-	// ÆÄÀÏ Ãâ·Â
+	
+	// image output
 	FILE* out = fopen("Lena_Sobel.pgm", "wb");
 	fprintf(out, "P5\n"); //magic no
 	fprintf(out, "%d %d\n", H, W);
@@ -147,14 +143,14 @@ void Q1_NonlinearGradient() {
 	}
 	Gradient_threshold(outImg2);
 
-	// ÆÄÀÏ Ãâ·Â min
+	// min image output
 	FILE* out1 = fopen("Lena_NonlinearGradient_min.pgm", "wb");
 	fprintf(out1, "P5\n"); //magic no
 	fprintf(out1, "%d %d\n", H, W);
 	fprintf(out1, "%d\n", maxlevel);
 	fwrite(outImg1, 1, sizeof(BYTE) * H * W, out1);
 
-	// ÆÄÀÏ Ãâ·Â max
+	// max image output
 	FILE* out2 = fopen("Lena_NonlinearGradient_max.pgm", "wb");
 	fprintf(out2, "P5\n"); //magic no
 	fprintf(out2, "%d %d\n", H, W);
@@ -168,7 +164,6 @@ void Q1_NonlinearGradient() {
 	free(outImg1);
 	free(outImg2);
 }
-
 
 double integral_av(int* integral, int i, int j) {
 	int sum, av_temp;
@@ -327,8 +322,7 @@ void Q1_NonlinearLaplacian() {
 			}
 			temp[i * W + j] = max_val + min_val - 2 * inImg[i * W + j];
 		}
-
-
+	
 	for (int i = half_size; i < H - half_size; i++)
 		for (int j = half_size; j < W - half_size; j++) {
 			int findZeroCross = 0;
@@ -348,7 +342,7 @@ void Q1_NonlinearLaplacian() {
 				outImg[i * W + j] = 0;
 		}
 
-	// ÆÄÀÏ Ãâ·Â
+	// image output
 	FILE* out1 = fopen("Lena_NonlinearLaplacian_1.pgm", "wb");
 	fprintf(out1, "P5\n"); //magic no
 	fprintf(out1, "%d %d\n", H, W);
@@ -364,7 +358,6 @@ void Q1_NonlinearLaplacian() {
 	fprintf(out2, "%d\n", maxlevel);
 	fwrite(outImg, 1, sizeof(BYTE) * H * W, out2);
 
-
 	fclose(infile);
 	fclose(out1);
 	fclose(out2);
@@ -373,8 +366,6 @@ void Q1_NonlinearLaplacian() {
 	free(temp);
 	free(l_value);
 }
-
-
 
 double calc_entropy(unsigned char* image, int x, int y) {
 	int hist[256] = { 0 };
@@ -388,7 +379,7 @@ double calc_entropy(unsigned char* image, int x, int y) {
 		}
 	}
 
-	// ¿£Æ®·ÎÇÇ °è»ê
+	// calculate entropy
 	for (int i = 0; i < 256; i++) {
 		if (hist[i] > 0) {
 			double p = (double)hist[i] / 9.0;
@@ -400,7 +391,7 @@ double calc_entropy(unsigned char* image, int x, int y) {
 }
 
 double calc_boundary(unsigned char* image, int x, int y) {
-	// °æ°è°ªÀ» °è»ê
+	// calculate boundary
 	double boundary = 0.0;
 
 	for (int i = -2; i <= 2; i++) {
@@ -412,7 +403,6 @@ double calc_boundary(unsigned char* image, int x, int y) {
 			}
 		}
 	}
-
 	return boundary;
 }
 
@@ -431,12 +421,10 @@ void Q1_EntropySketchOperator() {
 	BYTE* outImg = (BYTE*)malloc(sizeof(BYTE) * W * H);
 	memset(outImg, 0, sizeof(BYTE) * W * H);
 
-	// °æ°èÈ­¼Ò¸¦ ¼³Á¤ÇÒ ÀÓ°è°ª °è»ê
 	double max_entropy = log2(9.0);
 	double max_boundary = 255.0 * 8.0;
 	double threshold = (max_entropy * 0.3 + max_boundary * 0.7) / 8.0;
 
-	// °æ°èÈ­¼Ò °è»ê ¹× Ãâ·Â
 	for (int y = 1; y < H - 1; y++) {
 		for (int x = 1; x < W - 1; x++) {
 			double entropy = calc_entropy(inImg, x, y);
@@ -538,7 +526,7 @@ void Q1_DP()
 				outImg[i * W + j] = 255;
 		}
 
-	// ÆÄÀÏ Ãâ·Â
+	// image output
 	FILE* out = fopen("Lena_DP.pgm", "wb");
 	fprintf(out, "P5\n"); //magic no
 	fprintf(out, "%d %d\n", H, W);
@@ -629,7 +617,7 @@ void Q1_DIP()
 				outImg[i * W + j] = 255;
 		}
 
-	// ÆÄÀÏ Ãâ·Â
+	// image output
 	FILE* out = fopen("Lena_DIP.pgm", "wb");
 	fprintf(out, "P5\n"); //magic no
 	fprintf(out, "%d %d\n", H, W);
@@ -645,7 +633,7 @@ void Q1_DIP()
 }
 
 
-//Harris corner detector¿¡ »ç¿ëµÇ´Â Àü¿ª º¯¼ö
+//Harris corner detector
 float R[CH][CW];
 
 int sx[3][3] = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
@@ -671,7 +659,7 @@ void Q2_Harris() {
 			outImg[i * CW + j] = 0;
 
 
-	// Sobel operator Àû¿ë
+	// Sobel operator
 	int tempx, tempy;
 	for (int i = 1; i < CH - 1; i++)
 		for (int j = 1; j < CW - 1; j++) {
@@ -687,7 +675,7 @@ void Q2_Harris() {
 			Ixy[i][j] = abs(tempx) * abs(tempy);
 		}
 
-	// 5x5 ±ÕÀÏ °¡ÁßÄ¡ Æò±Õ °è»ê
+	// 5x5 ê· ì¼ ê°€ì¤‘ì¹˜ í‰ê·  ê³„ì‚°
 	int sumx, sumy, sumxy;
 	for (int i = 2; i < CH - 2; i++)
 		for (int j = 2; j < CW - 2; j++) {
@@ -709,7 +697,7 @@ void Q2_Harris() {
 		for (int j = 2; j < CW - 2; j++)
 			R[i][j] = Gx2[i][j] * Gy2[i][j] - Gxy[i][j] * Gxy[i][j] - 0.05 * (Gx2[i][j] + Gy2[i][j]) * (Gx2[i][j] + Gy2[i][j]);
 
-	// Corner Ãâ·Â (ÁÖº¯ ÀÎÁ¢ 8pixel ºñ±³)
+	// Corner ì¶œë ¥
 	for (int i = 2; i < CH - 2; i++)
 		for (int j = 2; j < CW - 2; j++) {
 			if (R[i][j] > 0.01)
